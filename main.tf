@@ -140,6 +140,27 @@ module "accessportgroup" {
   ]
 }
 
+module "vpc" {
+  source = "./modules/vpc"
+  for_each = var.vpc
+  name = each.value.name
+  lldp_status = each.value.lldp_status
+  cdp_status  = each.value.cdp_status
+  port_channel_status = each.value.port_channel_status
+  aaep_name = each.value.aaep_name
+  leaf_profile = each.value.leaf_profile
+  leaf_block = each.value.leaf_block
+  lag_t = each.value.lag_t
+  ports = each.value.ports
+  depends_on = [
+    aci_cdp_interface_policy.cdp,
+    aci_lldp_interface_policy.lldp,
+    aci_lacp_policy.lacp,
+    aci_attachable_access_entity_profile.vmm_vmware_aaep,
+    aci_attachable_access_entity_profile.phydomain_aaep,
+  ]
+}
+
 data "aci_tenant" "this" {
   name = var.tenant.name
   depends_on = [
